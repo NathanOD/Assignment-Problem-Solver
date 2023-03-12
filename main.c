@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_SIZE 500 // définir la taille maximale du tableau
 #define NUM_COLUMNS 6 // définir le nombre de colonnes dans le fichier CSV
@@ -10,7 +11,7 @@ double calculerPenalite(int jour, int population[]);
 
 int main() {
     FILE *fichier;
-    fichier = fopen("pb10.csv", "r");
+    fichier = fopen("pb40.csv", "r");
     if (fichier == NULL) {
         printf("Erreur : impossible d'ouvrir le fichier\n");
         return 1;
@@ -38,56 +39,113 @@ int main() {
     fclose(fichier);
 
     int nbligne = i-1;
-    int choix[nbligne][7];
-    //int famille = 1;
+    int choix[nbligne+1][7];
+    //float choix[nbligne+1][7];
 
-    int pos0 = 0;
-    int pos1 = 0;
-    int pos2 = 0;
-    int pos3 = 0;
-    int pos4 = 0;
-    int pos5 = 0;
-    int pos6 = 0;
+    int pos = 0;
 
-    for (int k = 1; k < nbligne; k++) {
+    for (int k = 1; k < nbligne+1; k++) {
         switch (tableau[k][1]) {
             case 0:
-                choix[pos0][0] = tableau[k][0];
-                pos0++;
-                //famille++;
+                choix[pos][0] = tableau[k][0];
+                choix[pos][1] = 0;
+                choix[pos][2] = 0;
+                choix[pos][3] = 0;
+                choix[pos][4] = 0;
+                choix[pos][5] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 1:
-                choix[pos1][1] = tableau[k][0];
-                pos1++;
-                //famille++;
+                choix[pos][1] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][2] = 0;
+                choix[pos][3] = 0;
+                choix[pos][4] = 0;
+                choix[pos][5] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 2:
-                choix[pos2][2] = tableau[k][0];
-                pos2++;
-                //famille++;
+                choix[pos][2] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][1] = 0;
+                choix[pos][3] = 0;
+                choix[pos][4] = 0;
+                choix[pos][5] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 3:
-                choix[pos3][3] = tableau[k][0];
-                pos3++;
-                //famille++;
+                choix[pos][3] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][1] = 0;
+                choix[pos][2] = 0;
+                choix[pos][4] = 0;
+                choix[pos][5] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 4:
-                choix[pos4][4] = tableau[k][0];
-                pos4++;
-                //famille++;
+                choix[pos][4] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][1] = 0;
+                choix[pos][2] = 0;
+                choix[pos][3] = 0;
+                choix[pos][5] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 5:
-                choix[pos5][5] = tableau[k][0];
-                pos5++;
-                //famille++;
+                choix[pos][5] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][1] = 0;
+                choix[pos][2] = 0;
+                choix[pos][3] = 0;
+                choix[pos][4] = 0;
+                choix[pos][6] = 0;
+                pos++;
                 break;
             case 6:
-                choix[pos6][6] = tableau[k][0];
-                pos6++;
-                //famille++;
+                choix[pos][6] = tableau[k][0];
+                choix[pos][0] = 0;
+                choix[pos][1] = 0;
+                choix[pos][2] = 0;
+                choix[pos][3] = 0;
+                choix[pos][4] = 0;
+                choix[pos][5] = 0;
+                pos++;
                 break;
         }
     }
+
+    for (int j = 0; j < 7; j++) {
+        int somme = 0;
+        for (int i = 0; i < nbligne; i++) {
+            somme += choix[i][j];
+        }
+        choix[pos][j] = somme;
+    }
+
+    for (int j = 0; j < 7; j++) {
+        int somme = 0;
+        for (int i = 0; i < nbligne; i++) {
+            somme += choix[i][j];
+        }
+        choix[pos][j] = somme;
+        
+        /*
+        if (somme <= 250)
+        {
+            choix[pos+1][j] = 1;
+        }
+        else
+        {
+            choix[pos+1][j] = 0;
+        }
+        */
+    }
+
 
     /*
     int nb_ligne = nbligne;
@@ -131,12 +189,45 @@ int main() {
     */
 
     // afficher le tableau
-    for (int k = 0; k < i-1; k++) {
+    for (int k = 0; k < nbligne+1; k++) {
         for (int l = 0; l < 7; l++) {
             printf("%d ", choix[k][l]);
         }
         printf("\n");
     }
+
+
+
+
+    // Calcul pénalité
+    /*
+    double penalite = 0.0;
+    float list_pen[7];
+    int ind_max = 0;
+    for (int j = 0; j < 7; j++) {
+        double pen = 0.0;
+        if (j < 6)
+        {
+            pen = ((choix[pos][j]-125)/400.0)*pow(choix[pos][j], abs(choix[pos][j]-choix[pos][j+1])/50.0);
+        }
+        else
+        {
+            pen = ((choix[pos][j]-125)/400.0)*pow(choix[pos][j], abs(choix[pos][j]-choix[pos][j])/50.0);
+        }
+        list_pen[j] = pen;
+        penalite += pen;
+        
+        if (pen>list_pen[ind_max])
+        {
+            ind_max = j;
+        }
+        printf("%f ", list_pen[j]);
+    }
+    printf("\n");
+    printf("%f", penalite);
+    printf("\n");
+    printf("%d", ind_max);
+    */
 
     return 0;
 }
